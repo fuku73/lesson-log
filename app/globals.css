@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+
+body {
+  @apply bg-background text-text;
+  font-family: "Noto Sans JP", sans-serif;
+  --font-heading: "Noto Sans JP", sans-serif;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+button { @apply disabled:opacity-60 disabled:cursor-not-allowed; }
+input, textarea, select { @apply outline-none; }
