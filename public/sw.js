@@ -1,9 +1,9 @@
-const CACHE_NAME = "student-calte-v2";
+const CACHE_NAME = "lesson-log-v3";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(["/", "/manifest.json", "/icon.svg"]);
+      return cache.addAll(["/", "/manifest.json", "/apple-touch-icon.png"]);
     })
   );
   self.skipWaiting();
@@ -19,5 +19,11 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request, { cache: "no-store" }).catch(() => caches.match(event.request))
+    );
+  } else {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+  }
 });

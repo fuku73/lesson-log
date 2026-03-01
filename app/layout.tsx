@@ -1,6 +1,7 @@
 import "./globals.css";
 import React from "react";
 import PWAProvider from "./PWAProvider";
+import SplashScreen from "../components/SplashScreen";
 
 export const metadata = {
   title: "レッスンログ",
@@ -34,6 +35,7 @@ export default function RootLayout({
       </head>
       <body className="text-text min-h-screen" style={{ backgroundColor: "#F5F3F0" }}>
         <PWAProvider />
+        <SplashScreen />
         <div className="min-h-screen max-w-md mx-auto" style={{ backgroundColor: "#F5F3F0" }}>
           {children}
         </div>
