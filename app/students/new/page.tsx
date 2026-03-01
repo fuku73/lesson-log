@@ -70,7 +70,7 @@ export default function NewStudentPage() {
   return (
     <main className="px-4 pt-6 pb-24">
       <header className="mb-6">
-        <Link href="/" className="inline-flex items-center gap-1 text-sm text-muted mb-2">
+        <Link href="/students" className="inline-flex items-center gap-1 text-sm text-muted mb-2">
           ← ホーム
         </Link>
         <h1 className="text-xl font-semibold" style={{ fontFamily: "var(--font-heading)" }}>
@@ -223,7 +223,7 @@ export default function NewStudentPage() {
         </div>
 
         <div className="pt-4 flex gap-3">
-          <Link href="/" className="flex-1 rounded-2xl border border-border bg-card px-4 py-3 text-center text-sm text-muted">
+          <Link href="/students" className="flex-1 rounded-2xl border border-border bg-card px-4 py-3 text-center text-sm text-muted">
             キャンセル
           </Link>
           <button

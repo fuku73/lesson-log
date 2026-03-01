@@ -36,7 +36,7 @@ export default function HowToTransferPage() {
       const result = await importAllData(file);
       setMessage({ type: result.ok ? "ok" : "err", text: result.message });
       if (result.ok) {
-        setTimeout(() => router.push("/"), 1500);
+        setTimeout(() => router.push("/students"), 1500);
       }
     } catch (err) {
       console.error(err);

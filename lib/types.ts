@@ -42,3 +42,14 @@ export interface StudentWithLatestLog {
   student: Student;
   latestLog?: QuickLog;
 }
+
+export interface LessonLog {
+  id: string;
+  date: string; // YYYY-MM-DD
+  content: string;
+  attendees: string;
+  revenue?: number;
+  memo?: string;
+  createdAt: string;
+  updatedAt: string;
+}

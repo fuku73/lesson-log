@@ -1,7 +1,7 @@
-import type { Memo, QuickLog, Student, StudentWithLatestLog } from "./types";
+import type { LessonLog, Memo, QuickLog, Student, StudentWithLatestLog } from "./types";
 
 const DB_NAME = "student-notes-db";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -22,6 +22,10 @@ function openDB(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains("memos")) {
         const store = db.createObjectStore("memos", { keyPath: "id" });
         store.createIndex("by-studentId", "studentId");
+      }
+      if (!db.objectStoreNames.contains("lessonLogs")) {
+        const store = db.createObjectStore("lessonLogs", { keyPath: "id" });
+        store.createIndex("by-date", "date");
       }
     };
   });
@@ -222,5 +226,60 @@ export async function updateMemo(id: string, patch: Partial<Pick<Memo, "date" | 
 export async function deleteMemo(id: string): Promise<void> {
   const db = await openDB();
   await promisify(db.transaction("memos", "readwrite").objectStore("memos").delete(id));
+  db.close();
+}
+
+// LessonLogs CRUD
+export async function createLessonLog(
+  input: Omit<LessonLog, "id" | "createdAt" | "updatedAt">
+): Promise<LessonLog> {
+  const now = new Date().toISOString();
+  const log: LessonLog = {
+    id: crypto.randomUUID(),
+    ...input,
+    createdAt: now,
+    updatedAt: now
+  };
+  const db = await openDB();
+  await promisify(db.transaction("lessonLogs", "readwrite").objectStore("lessonLogs").add(log));
+  db.close();
+  return log;
+}
+
+export async function getAllLessonLogs(): Promise<LessonLog[]> {
+  const db = await openDB();
+  const all = await promisify(db.transaction("lessonLogs").objectStore("lessonLogs").getAll());
+  db.close();
+  return all.sort((a, b) => (b.date > a.date ? 1 : -1));
+}
+
+export async function getLessonLog(id: string): Promise<LessonLog | undefined> {
+  const db = await openDB();
+  const result = await promisify(db.transaction("lessonLogs").objectStore("lessonLogs").get(id));
+  db.close();
+  return result;
+}
+
+export async function updateLessonLog(id: string, patch: Partial<Omit<LessonLog, "id" | "createdAt">>): Promise<LessonLog | null> {
+  const db = await openDB();
+  const store = db.transaction("lessonLogs", "readwrite").objectStore("lessonLogs");
+  const existing = await promisify(store.get(id));
+  db.close();
+  if (!existing) return null;
+  const updated: LessonLog = {
+    ...existing,
+    ...patch,
+    id,
+    updatedAt: new Date().toISOString()
+  };
+  const db2 = await openDB();
+  await promisify(db2.transaction("lessonLogs", "readwrite").objectStore("lessonLogs").put(updated));
+  db2.close();
+  return updated;
+}
+
+export async function deleteLessonLog(id: string): Promise<void> {
+  const db = await openDB();
+  await promisify(db.transaction("lessonLogs", "readwrite").objectStore("lessonLogs").delete(id));
   db.close();
 }

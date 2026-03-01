@@ -1,138 +1,74 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { FiSearch, FiPlus } from "react-icons/fi";
-import { getAllStudentsWithLatestLog } from "../lib/db";
-import type { StudentWithLatestLog } from "../lib/types";
 
 export default function HomePage() {
-  const [students, setStudents] = useState<StudentWithLatestLog[]>([]);
-  const [query, setQuery] = useState("");
-
-  useEffect(() => {
-    getAllStudentsWithLatestLog().then(setStudents).catch(console.error);
-  }, []);
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return students;
-    return students.filter((s) => {
-      const nameMatch =
-        s.student.name.toLowerCase().includes(q) ||
-        (s.student.nickname ?? "").toLowerCase().includes(q);
-      const lessonMatch = (s.latestLog?.lessonAttended ?? "").toLowerCase().includes(q);
-      const tagPool = (s.student.tags ?? []).join(" ").toLowerCase();
-      return nameMatch || lessonMatch || tagPool.includes(q);
-    });
-  }, [students, query]);
-
   return (
-    <main className="px-4 pt-6 pb-28 bg-background min-h-screen" style={{ paddingBottom: "max(6rem, calc(1.5rem + env(safe-area-inset-bottom)))" }}>
-      <header className="mb-6">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <h1
-              className="text-2xl font-bold mb-1 flex items-center gap-2"
-              style={{ fontFamily: "var(--font-heading)", color: "#4A4A4A" }}
-            >
-              <img src="/logo.png" alt="" className="w-8 h-8 object-contain" />
-              レッスンログ
-            </h1>
-            <p className="text-sm text-muted mt-1">
-              レッスン記録をまとめるノート
-            </p>
-          </div>
-          <Link
-            href="/how-to"
-            className="shrink-0 text-sm font-medium py-2 px-3 rounded-xl bg-sub hover:bg-primary/20 transition-colors"
-            style={{ whiteSpace: "nowrap", color: "#C4A99E" }}
-          >
-            How to
-          </Link>
+    <main className="px-4 pt-6 pb-24 bg-background min-h-screen flex flex-col items-center justify-center">
+      <header className="mb-8 text-center">
+        <div className="flex justify-center mb-4">
+          <img src="/logo.png" alt="" className="w-20 h-20 object-contain drop-shadow-sm" />
         </div>
+        <h1
+          className="text-2xl font-bold"
+          style={{ fontFamily: "var(--font-heading)", color: "#4A4A4A" }}
+        >
+          レッスンログ
+        </h1>
+        <p className="text-sm text-muted mt-2">
+          レッスン記録をまとめるノート
+        </p>
+        <Link
+          href="/how-to"
+          className="inline-flex items-center gap-2 mt-4 py-2.5 px-4 rounded-2xl bg-sub/80 hover:bg-primary/20 transition-colors"
+          style={{ color: "#C4A99E", textDecoration: "none" }}
+        >
+          <img src="/howto-icon.png" alt="" className="w-4 h-4 object-contain" />
+          <span className="text-sm font-medium">How to</span>
+        </Link>
       </header>
 
-      <div className="mb-4">
-        <div className="flex items-center gap-2 bg-card rounded-2xl px-4 py-3 shadow-soft border border-border/50">
-          <FiSearch className="text-primary-dark text-xl shrink-0" aria-hidden />
-          <input
-            className="w-full bg-transparent text-sm placeholder:text-muted"
-            placeholder="名前・ニックネームで検索"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <section className="space-y-3">
-        {filtered.length === 0 ? (
-          <div className="mt-8 p-6 rounded-2xl bg-sub/50 border border-border/50 text-center">
-            <img src="/empty-icon.png" alt="" className="w-16 h-16 mx-auto mb-3 object-contain" />
-            <p className="text-sm text-muted">
-              まだ生徒さんがいません。<br />
-              「追加」ボタンから追加してみましょう。
-            </p>
+      <div className="w-full max-w-sm space-y-5">
+        <Link
+          href="/diary"
+          className="block rounded-2xl p-6 shadow-soft border-2 active:scale-[0.98] transition-transform text-center overflow-hidden"
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderColor: "#E8D5D2",
+            boxShadow: "0 4px 20px rgba(221, 199, 196, 0.25)"
+          }}
+        >
+          <div className="w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center" style={{ backgroundColor: "rgba(221, 199, 196, 0.35)" }}>
+            <img src="/diary-icon.png" alt="" className="w-8 h-8 object-contain" />
           </div>
-        ) : (
-          filtered.map(({ student, latestLog }) => (
-            <Link
-              key={student.id}
-              href={`/students/${student.id}`}
-              className="block bg-card rounded-2xl px-4 py-4 shadow-soft border border-border/50 active:scale-[0.99] transition-transform hover:shadow-soft-lg"
-            >
-              <div className="flex gap-3 items-center">
-                <div className="w-12 h-12 rounded-full bg-sub flex items-center justify-center text-sm text-muted overflow-hidden shrink-0">
-                  {student.photo ? (
-                    <img
-                      src={student.photo}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span>{student.name.charAt(0)}</span>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{student.name}</p>
-                  {student.nickname && (
-                    <p className="text-[11px] text-muted truncate">{student.nickname}</p>
-                  )}
-                  {latestLog?.date && (
-                    <p className="text-[10px] text-muted mt-0.5">
-                      最終:{" "}
-                      {new Date(latestLog.date).toLocaleDateString("ja-JP", {
-                        month: "short",
-                        day: "numeric"
-                      })}
-                    </p>
-                  )}
-                  <div className="mt-1 flex flex-wrap gap-1">
-                    {[...(student.tags ?? []), latestLog?.lessonAttended].filter(Boolean).slice(0, 4).map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center rounded-full bg-sub text-[10px] px-2 py-0.5 text-muted"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))
-        )}
-      </section>
+          <h2 className="text-lg font-bold" style={{ fontFamily: "var(--font-heading)", color: "#4A4A4A" }}>
+            レッスン日誌
+          </h2>
+          <p className="text-sm mt-1" style={{ color: "#9B9B9B" }}>
+            日ごとのレッスン記録をつける
+          </p>
+        </Link>
 
-      <Link
-        href="/students/new"
-        className="fixed right-4 md:right-6 inline-flex items-center gap-2 pl-5 pr-5 py-3 rounded-full shadow-soft-lg active:scale-95 transition-transform text-sm font-medium min-h-[48px] border-2 border-white/50"
-        style={{ bottom: "max(1.5rem, env(safe-area-inset-bottom))", backgroundColor: "#DDC7C4", color: "#fff" }}
-        aria-label="新しい生徒を追加"
-      >
-        <FiPlus className="text-xl" aria-hidden />
-        <span>新しい生徒を追加</span>
-      </Link>
+        <Link
+          href="/students"
+          className="block rounded-2xl p-6 shadow-soft border-2 active:scale-[0.98] transition-transform text-center overflow-hidden"
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderColor: "#E8D5D2",
+            boxShadow: "0 4px 20px rgba(221, 199, 196, 0.25)"
+          }}
+        >
+          <div className="w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center" style={{ backgroundColor: "rgba(221, 199, 196, 0.35)" }}>
+            <img src="/student-icon.png" alt="" className="w-8 h-8 object-contain" />
+          </div>
+          <h2 className="text-lg font-bold" style={{ fontFamily: "var(--font-heading)", color: "#4A4A4A" }}>
+            生徒さんノート
+          </h2>
+          <p className="text-sm mt-1" style={{ color: "#9B9B9B" }}>
+            生徒ごとの情報とレッスン履歴
+          </p>
+        </Link>
+      </div>
     </main>
   );
 }

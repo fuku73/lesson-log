@@ -126,7 +126,7 @@ export default function StudentDetailPage() {
     if (!student) return;
     setShowDeleteConfirm(false);
     await deleteStudent(student.id);
-    router.push("/");
+    router.push("/students");
   }
 
   async function handleUpdateMemo(memoId: string, text: string, date: string) {
@@ -156,7 +156,7 @@ export default function StudentDetailPage() {
     return (
       <main className="px-4 pt-6 pb-24">
         <p className="text-muted">生徒さんが見つかりませんでした。</p>
-        <Link href="/" className="text-primary text-sm mt-2 inline-block">← ホームに戻る</Link>
+        <Link href="/students" className="text-primary text-sm mt-2 inline-block">← 生徒さんノートに戻る</Link>
       </main>
     );
   }
@@ -174,7 +174,7 @@ export default function StudentDetailPage() {
   return (
     <main className="px-4 pt-6 pb-24">
       <header className="mb-6">
-        <Link href="/" className="inline-flex items-center gap-1 text-sm text-muted">← ホーム</Link>
+        <Link href="/students" className="inline-flex items-center gap-1 text-sm text-muted">← 生徒さんノート</Link>
       </header>
 
       <div className="mb-6 flex flex-col items-center">

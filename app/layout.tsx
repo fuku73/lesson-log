@@ -1,7 +1,6 @@
 import "./globals.css";
 import React from "react";
 import PWAProvider from "./PWAProvider";
-import ClientApp from "../components/ClientApp";
 
 export const metadata = {
   title: "レッスンログ",
@@ -33,13 +32,11 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
         />
       </head>
-      <body className="text-text" style={{ backgroundColor: "#F5F3F0" }}>
+      <body className="text-text min-h-screen" style={{ backgroundColor: "#F5F3F0" }}>
         <PWAProvider />
-        <ClientApp>
-          <div className="min-h-screen max-w-md mx-auto" style={{ backgroundColor: "#F5F3F0" }}>
-            {children}
-          </div>
-        </ClientApp>
+        <div className="min-h-screen max-w-md mx-auto" style={{ backgroundColor: "#F5F3F0" }}>
+          {children}
+        </div>
       </body>
     </html>
   );
