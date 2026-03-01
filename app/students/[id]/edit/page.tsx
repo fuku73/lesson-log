@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { FiCamera } from "react-icons/fi";
 import { getStudent, updateStudent } from "../../../../lib/db";
 import type { Student } from "../../../../lib/types";
 
@@ -28,6 +29,8 @@ export default function EditStudentPage() {
   const [familyWork, setFamilyWork] = useState("");
   const [allergies, setAllergies] = useState("");
   const [favorites, setFavorites] = useState("");
+  const [availableDays, setAvailableDays] = useState("");
+  const [favoriteStyle, setFavoriteStyle] = useState("");
   const [snsFaceOk, setSnsFaceOk] = useState<boolean | undefined>(undefined);
   const [photo, setPhoto] = useState("");
   const [saving, setSaving] = useState(false);
@@ -44,6 +47,8 @@ export default function EditStudentPage() {
       setFamilyWork(s.familyWork ?? "");
       setAllergies(s.allergies ?? "");
       setFavorites(s.favorites ?? "");
+      setAvailableDays(s.availableDays ?? "");
+      setFavoriteStyle(s.favoriteStyle ?? "");
       setSnsFaceOk(s.snsFaceOk);
       setPhoto(s.photo ?? "");
     }
@@ -77,6 +82,8 @@ export default function EditStudentPage() {
         familyWork: familyWork.trim() || undefined,
         allergies: allergies.trim() || undefined,
         favorites: favorites.trim() || undefined,
+        availableDays: availableDays.trim() || undefined,
+        favoriteStyle: favoriteStyle.trim() || undefined,
         snsFaceOk,
         photo: photo || undefined
       });
@@ -118,7 +125,7 @@ export default function EditStudentPage() {
               {photo ? (
                 <img src={photo} alt="" className="w-full h-full object-cover" />
               ) : (
-                <span>📷</span>
+                <FiCamera className="text-2xl text-muted" aria-hidden />
               )}
             </button>
             <input
@@ -138,7 +145,7 @@ export default function EditStudentPage() {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="例：田中 花子"
+            placeholder="例：鈴木 こはる"
             className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-soft"
             required
           />
@@ -150,7 +157,7 @@ export default function EditStudentPage() {
             type="text"
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
-            placeholder="例：はなちゃん"
+            placeholder="例：こはさん"
             className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-soft"
           />
         </div>
@@ -161,7 +168,7 @@ export default function EditStudentPage() {
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder="例：東京都"
+            placeholder="例：森林公園のふもと"
             className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-soft"
           />
         </div>
@@ -172,7 +179,7 @@ export default function EditStudentPage() {
             type="text"
             value={favoriteDrink}
             onChange={(e) => setFavoriteDrink(e.target.value)}
-            placeholder="例：麦茶、ポテチ"
+            placeholder="例：紅茶、チョコレート"
             className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-soft"
           />
         </div>
@@ -182,7 +189,7 @@ export default function EditStudentPage() {
           <textarea
             value={familyWork}
             onChange={(e) => setFamilyWork(e.target.value)}
-            placeholder="例：母と2人暮らし、会社員"
+            placeholder="例：ご主人、ヨガ講師"
             rows={2}
             className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-soft resize-none"
           />
@@ -193,7 +200,7 @@ export default function EditStudentPage() {
           <textarea
             value={allergies}
             onChange={(e) => setAllergies(e.target.value)}
-            placeholder="例：卵アレルギー、ペンギン好き"
+            placeholder="例：アレルギーはないけど、牛乳が苦手"
             rows={2}
             className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-soft resize-none"
           />
@@ -205,8 +212,30 @@ export default function EditStudentPage() {
             type="text"
             value={favorites}
             onChange={(e) => setFavorites(e.target.value)}
-            placeholder="例：絵本、恐竜"
+            placeholder="例：森林浴、カフェ巡り"
             className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-soft"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-text mb-1">参加しやすい曜日や時間帯</label>
+          <textarea
+            value={availableDays}
+            onChange={(e) => setAvailableDays(e.target.value)}
+            placeholder="例：火曜午前、金曜夕方"
+            rows={2}
+            className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-soft resize-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-text mb-1">好きな色やテイスト</label>
+          <textarea
+            value={favoriteStyle}
+            onChange={(e) => setFavoriteStyle(e.target.value)}
+            placeholder="例：パステルカラー、ナチュラル系"
+            rows={2}
+            className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-soft resize-none"
           />
         </div>
 

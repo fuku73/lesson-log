@@ -1,7 +1,7 @@
-import type { QuickLog, Student, StudentWithLatestLog } from "./types";
+import type { Memo, QuickLog, Student, StudentWithLatestLog } from "./types";
 
 const DB_NAME = "student-notes-db";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -18,6 +18,10 @@ function openDB(): Promise<IDBDatabase> {
         const store = db.createObjectStore("quickLogs", { keyPath: "id" });
         store.createIndex("by-studentId", "studentId");
         store.createIndex("by-studentId-date", ["studentId", "date"]);
+      }
+      if (!db.objectStoreNames.contains("memos")) {
+        const store = db.createObjectStore("memos", { keyPath: "id" });
+        store.createIndex("by-studentId", "studentId");
       }
     };
   });
@@ -67,26 +71,32 @@ export async function updateStudent(id: string, patch: Partial<Student>) {
 
 export async function deleteStudent(id: string) {
   const db = await openDB();
-  const tx = db.transaction(["students", "quickLogs"], "readwrite");
+  const tx = db.transaction(["students", "quickLogs", "memos"], "readwrite");
   const studentsStore = tx.objectStore("students");
   const quickLogsStore = tx.objectStore("quickLogs");
+  const memosStore = tx.objectStore("memos");
 
   studentsStore.delete(id);
 
-  await new Promise<void>((resolve, reject) => {
-    const idx = quickLogsStore.index("by-studentId");
-    const req = idx.openCursor(IDBKeyRange.only(id));
-    req.onsuccess = () => {
-      const cursor = req.result;
-      if (cursor) {
-        cursor.delete();
-        cursor.continue();
-      } else {
-        resolve();
-      }
-    };
-    req.onerror = () => reject(req.error);
-  });
+  const deleteByStudentId = async (store: IDBObjectStore, indexName: string) => {
+    await new Promise<void>((resolve, reject) => {
+      const idx = store.index(indexName);
+      const req = idx.openCursor(IDBKeyRange.only(id));
+      req.onsuccess = () => {
+        const cursor = req.result;
+        if (cursor) {
+          cursor.delete();
+          cursor.continue();
+        } else {
+          resolve();
+        }
+      };
+      req.onerror = () => reject(req.error);
+    });
+  };
+
+  await deleteByStudentId(quickLogsStore, "by-studentId");
+  await deleteByStudentId(memosStore, "by-studentId");
 
   await new Promise<void>((res, rej) => {
     tx.oncomplete = () => res();
@@ -127,6 +137,20 @@ export async function createQuickLog(
   return log;
 }
 
+export async function updateQuickLog(id: string, patch: Partial<QuickLog>): Promise<QuickLog | null> {
+  const db = await openDB();
+  const store = db.transaction("quickLogs", "readwrite").objectStore("quickLogs");
+  const existing = await promisify(store.get(id));
+  db.close();
+  if (!existing) return null;
+  const updated: QuickLog = { ...existing, ...patch, id };
+  const db2 = await openDB();
+  await promisify(db2.transaction("quickLogs", "readwrite").objectStore("quickLogs").put(updated));
+  db2.close();
+  if (existing.studentId) await updateStudent(existing.studentId, {});
+  return updated;
+}
+
 export async function getQuickLogsByStudent(studentId: string) {
   const db = await openDB();
   const store = db.transaction("quickLogs").objectStore("quickLogs");
@@ -149,4 +173,54 @@ export async function getAllStudentsWithLatestLog(): Promise<StudentWithLatestLo
     result.push({ student, latestLog: logs[0] });
   }
   return result;
+}
+
+// Memos CRUD
+export async function createMemo(
+  input: Omit<Memo, "id" | "createdAt" | "updatedAt">
+): Promise<Memo> {
+  const now = new Date().toISOString();
+  const memo: Memo = {
+    id: crypto.randomUUID(),
+    ...input,
+    createdAt: now,
+    updatedAt: now
+  };
+  const db = await openDB();
+  await promisify(db.transaction("memos", "readwrite").objectStore("memos").add(memo));
+  db.close();
+  return memo;
+}
+
+export async function getMemosByStudent(studentId: string): Promise<Memo[]> {
+  const db = await openDB();
+  const store = db.transaction("memos").objectStore("memos");
+  const idx = store.index("by-studentId");
+  const all = await promisify(idx.getAll(studentId));
+  db.close();
+  return all.sort((a, b) => (b.date > a.date ? 1 : -1));
+}
+
+export async function updateMemo(id: string, patch: Partial<Pick<Memo, "date" | "text">>): Promise<Memo | null> {
+  const db = await openDB();
+  const store = db.transaction("memos", "readwrite").objectStore("memos");
+  const existing = await promisify(store.get(id));
+  db.close();
+  if (!existing) return null;
+  const updated: Memo = {
+    ...existing,
+    ...patch,
+    id,
+    updatedAt: new Date().toISOString()
+  };
+  const db2 = await openDB();
+  await promisify(db2.transaction("memos", "readwrite").objectStore("memos").put(updated));
+  db2.close();
+  return updated;
+}
+
+export async function deleteMemo(id: string): Promise<void> {
+  const db = await openDB();
+  await promisify(db.transaction("memos", "readwrite").objectStore("memos").delete(id));
+  db.close();
 }

@@ -1,1 +1,19 @@
-{"name":"おうち教室🏠生徒さんカルテ","short_name":"生徒さんカルテ","description":"生徒さんの情報とレッスン記録をまとめるノート","start_url":"/","display":"standalone","background_color":"#F7F5F2","theme_color":"#6B8E7E","orientation":"portrait","icons":[{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{
+  "name": "レッスンログ",
+  "short_name": "レッスンログ",
+  "description": "レッスン記録をまとめるノート",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F3F0",
+  "theme_color": "#DDC7C4",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

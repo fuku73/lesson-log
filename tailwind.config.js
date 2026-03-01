@@ -3,16 +3,23 @@ module.exports = {
   content: ["./app/**/*.{js,ts,jsx,tsx,mdx}", "./components/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
-      boxShadow: { soft: "0 10px 30px rgba(0, 0, 0, 0.04)" },
+      boxShadow: {
+        soft: "0 10px 30px rgba(74, 74, 74, 0.06)",
+        "soft-lg": "0 15px 40px rgba(74, 74, 74, 0.08)"
+      },
       colors: {
-        background: "#F7F5F2",
+        primary: "#DDC7C4",
+        "primary-dark": "#C4A99E",
+        background: "#F5F3F0",
         card: "#FFFFFF",
-        primary: "#6B8E7E",
-        accent: "#D8C3A5",
-        sub: "#EAE7DC",
-        text: "#2E2E2E",
-        muted: "#7A7A7A",
-        border: "#E5E2DC"
+        text: "#4A4A4A",
+        muted: "#9B9B9B",
+        sub: "#EAE6E1",
+        border: "#DCD8D3",
+        accent: "#E8D5D2"
+      },
+      fontFamily: {
+        rounded: ["M PLUS Rounded 1c", "sans-serif"]
       }
     }
   },

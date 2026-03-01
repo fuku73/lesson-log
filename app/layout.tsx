@@ -1,15 +1,16 @@
 import "./globals.css";
 import React from "react";
 import PWAProvider from "./PWAProvider";
+import ClientApp from "../components/ClientApp";
 
 export const metadata = {
-  title: "おうち教室🏠生徒さんカルテ",
-  description: "おうち教室の先生のための、生徒さん情報のやさしい記録アプリ",
+  title: "レッスンログ",
+  description: "レッスン記録をまとめるやさしい記録アプリ",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "生徒さんカルテ"
+    title: "レッスンログ"
   }
 };
 
@@ -21,18 +22,24 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <head>
-        <meta name="theme-color" content="#6B8E7E" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+        <meta name="theme-color" content="#DDC7C4" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <link rel="apple-touch-icon" href="/icon.svg" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
         />
       </head>
-      <body className="bg-background text-text">
+      <body className="text-text" style={{ backgroundColor: "#F5F3F0" }}>
         <PWAProvider />
-        <div className="min-h-screen max-w-md mx-auto bg-background">
-          {children}
-        </div>
+        <ClientApp>
+          <div className="min-h-screen max-w-md mx-auto" style={{ backgroundColor: "#F5F3F0" }}>
+            {children}
+          </div>
+        </ClientApp>
       </body>
     </html>
   );
