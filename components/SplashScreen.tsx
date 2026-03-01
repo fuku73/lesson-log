@@ -24,7 +24,7 @@ export default function SplashScreen() {
       style={{
         backgroundColor: "#F5F3F0",
         opacity: phase === "show" ? 1 : 0,
-        pointerEvents: phase === "hidden" ? "none" : "auto"
+        pointerEvents: "auto"
       }}
     >
       <div className="flex flex-col items-center justify-center">
