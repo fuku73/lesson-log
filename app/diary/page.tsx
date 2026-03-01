@@ -6,7 +6,7 @@ import { FiSearch, FiPlus } from "react-icons/fi";
 import { getAllLessonLogs } from "../../lib/db";
 import type { LessonLog } from "../../lib/types";
 
-type DateFilter = "all" | "month" | "today";
+type DateFilter = "all" | "month" | "lastMonth" | "twoMonthsAgo";
 
 function formatDateForDisplay(dateStr: string) {
   return new Date(dateStr + "T12:00:00").toLocaleDateString("ja-JP", {
@@ -40,13 +40,22 @@ export default function DiaryListPage() {
     }
 
     const now = new Date();
-    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
 
-    if (dateFilter === "today") {
-      result = result.filter((l) => l.date === todayStr);
-    } else if (dateFilter === "month") {
+    if (dateFilter === "month") {
       result = result.filter((l) => l.date >= monthStart);
+    } else if (dateFilter === "lastMonth") {
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+      const lastMonthStartStr = `${lastMonthStart.getFullYear()}-${String(lastMonthStart.getMonth() + 1).padStart(2, "0")}-01`;
+      const lastMonthEndStr = `${lastMonthEnd.getFullYear()}-${String(lastMonthEnd.getMonth() + 1).padStart(2, "0")}-${String(lastMonthEnd.getDate()).padStart(2, "0")}`;
+      result = result.filter((l) => l.date >= lastMonthStartStr && l.date <= lastMonthEndStr);
+    } else if (dateFilter === "twoMonthsAgo") {
+      const twoMonthsAgoStart = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+      const twoMonthsAgoEnd = new Date(now.getFullYear(), now.getMonth() - 1, 0);
+      const startStr = `${twoMonthsAgoStart.getFullYear()}-${String(twoMonthsAgoStart.getMonth() + 1).padStart(2, "0")}-01`;
+      const endStr = `${twoMonthsAgoEnd.getFullYear()}-${String(twoMonthsAgoEnd.getMonth() + 1).padStart(2, "0")}-${String(twoMonthsAgoEnd.getDate()).padStart(2, "0")}`;
+      result = result.filter((l) => l.date >= startStr && l.date <= endStr);
     }
 
     return result;
@@ -82,7 +91,8 @@ export default function DiaryListPage() {
         {[
           { value: "all" as DateFilter, label: "全件" },
           { value: "month" as DateFilter, label: "今月" },
-          { value: "today" as DateFilter, label: "今日" }
+          { value: "lastMonth" as DateFilter, label: "先月" },
+          { value: "twoMonthsAgo" as DateFilter, label: "先々月" }
         ].map(({ value, label }) => (
           <button
             key={value}
